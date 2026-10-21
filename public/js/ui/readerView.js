@@ -2,7 +2,7 @@
 import { esc, attr, bool } from './escape.js';
 
 export function readerView(v, on) {
-  return `<div class="${attr(v.shellClass)}" style="min-height: 100vh; box-sizing: border-box; background: ${attr(v.shellBg)}; color: var(--ink); font-family: 'Noto Sans', system-ui, sans-serif; ${attr(v.cssVars)}">
+  return `<div style="min-height: 100vh; box-sizing: border-box; background: ${attr(v.shellBg)}; color: var(--ink); font-family: 'Noto Sans', system-ui, sans-serif; ${attr(v.cssVars)}">
 
   
   <header style="position: sticky; top: 0; z-index: 10; ${attr(v.headerStyle)}">

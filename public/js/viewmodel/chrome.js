@@ -108,7 +108,6 @@ export function buildChrome(env) {
     turnMs: (TURN_MS / 1000) + 's',
     cv: buildCover(env),
     headerStyle: headerStyle(env),
-    shellClass: showCoverWhite(env) ? 'cover-theme' : '',
     shellBg: showCoverWhite(env) ? coverGlow(single) : 'var(--bg)',
     coverBg: 'transparent',
     openPractice: () => A.openPractice(shown),
