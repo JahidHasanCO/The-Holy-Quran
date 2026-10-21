@@ -449,38 +449,10 @@ export function readerView(v, on) {
       ` : ''}
 
       
-      ${v.playerOn ? `
-        <div role="region" aria-label="Audio player" style="pointer-events: auto; position: relative; overflow: hidden; width: min(560px, 100%); box-sizing: border-box; padding: 8px 8px 8px 12px; border-radius: 18px; background: var(--dock); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid var(--line); box-shadow: 0 12px 36px rgba(0,0,0,.16); display: flex; align-items: center; gap: 8px">
-          <div aria-hidden="true" style="position: absolute; left: 0; top: 0; height: 3px; width: ${attr(v.pl?.pct)}; background: var(--accent)"></div>
-          <span style="flex: 1; min-width: 0; display: flex; flex-direction: column">
-            <span style="font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">${esc(v.pl?.title)}</span>
-            <label for="reciter" class="sr">Reciter</label>
-            <select id="reciter" value="${attr(v.pl?.reciterId)}" data-on-change="${on(v.pl?.onReciter)}" style="max-width: 100%; height: 22px; padding: 0; border: 0; background: transparent; color: var(--muted); font: inherit; font-size: 12px; cursor: pointer">
-              ${(v.reciters ?? []).map((rc) => `<option value="${attr(rc?.id)}">${esc(rc?.name)}</option>`).join('')}
-            </select>
-          </span>
-          <button class="btn icon ghost" aria-label="Previous ayah" data-on-click="${on(v.pl?.prev)}" style="width: 38px; height: 38px">
-            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2v14H6zM20 5v14L9 12z"></path></svg>
-          </button>
-          <button class="btn icon primary" aria-label="${attr(v.pl?.toggleLabel)}" data-on-click="${on(v.pl?.toggle)}" style="width: 42px; height: 42px">
-            ${v.pl?.playing ? `<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h4v14H7zM13 5h4v14h-4z"></path></svg>` : ''}
-            ${v.pl?.paused ? `<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"></path></svg>` : ''}
-          </button>
-          <button class="btn icon ghost" aria-label="Next ayah" data-on-click="${on(v.pl?.next)}" style="width: 38px; height: 38px">
-            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 5h2v14h-2zM4 5v14l11-7z"></path></svg>
-          </button>
-          <button class="btn" data-on-click="${on(v.pl?.cycleSpeed)}" aria-label="Playback speed" style="height: 32px; padding: 0 8px; font-size: 12px">${esc(v.pl?.speed)}</button>
-          <button class="btn icon ghost" aria-label="Repeat ayah" aria-pressed="${attr(v.pl?.repeat)}" data-on-click="${on(v.pl?.toggleRepeat)}" style="width: 34px; height: 34px; ${attr(v.pl?.repeatStyle)}">
-            <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"></path><path d="M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4"></path><path d="M21 13v2a3 3 0 0 1-3 3H3"></path></svg>
-          </button>
-          <button class="btn icon ghost" aria-label="Close player" data-on-click="${on(v.pl?.close)}" style="width: 34px; height: 34px">
-            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
-          </button>
-        </div>
-      ` : ''}
 
       
-      <nav aria-label="Reading controls" style="pointer-events: auto; max-width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 2px; padding: 5px; border-radius: 999px; background: var(--dock); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid var(--line); box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 14px 40px rgba(0,0,0,.16)">
+      <nav aria-label="Reading controls" style="pointer-events: auto; position: relative; overflow: hidden; max-width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 2px; padding: 5px; border-radius: 999px; background: var(--dock); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid var(--line); box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 14px 40px rgba(0,0,0,.16)">
+        ${v.playerOn ? `<div aria-hidden="true" style="position: absolute; left: 0; bottom: 0; height: 3px; width: ${attr(v.pl?.pct)}; background: var(--accent)"></div>` : ''}
         <button class="btn icon ghost" aria-label="Next page" data-on-click="${on(v.next)}"${bool('disabled', v.atEnd)} style="width: 42px; height: 42px">
           <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg>
         </button>
@@ -493,16 +465,36 @@ export function readerView(v, on) {
           </div>
           <span aria-hidden="true" style="${attr(v.divStyle)}"></span>
         ` : ''}
-        ${v.isSingle ? `
+        ${v.isSingle && v.dockExtras ? `
           <button class="btn icon ghost" aria-label="${attr(v.modeCycleLabel)}" data-on-click="${on(v.cycleMode)}" style="width: 42px; height: 42px; flex-direction: column; gap: 0">
             <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6c-2-1.5-5-2-8-2v14c3 0 6 .5 8 2 2-1.5 5-2 8-2V4c-3 0-6 .5-8 2z"></path><path d="M12 6v14"></path></svg>
             <span style="font-size: 9px; font-weight: 700; line-height: 1">${esc(v.modeShort)}</span>
+          </button>
+        ` : ''}
+        ${v.playerOn ? `
+          <button class="btn icon ghost" aria-label="Previous ayah" data-on-click="${on(v.pl?.prev)}" style="width: 38px; height: 38px">
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2v14H6zM20 5v14L9 12z"></path></svg>
           </button>
         ` : ''}
         <button class="btn icon primary" aria-label="${attr(v.listenLabel)}" aria-pressed="${attr(v.playerOn)}" data-on-click="${on(v.startListen)}" style="width: 44px; height: 44px">
           ${v.listenPlaying ? `<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h4v14H7zM13 5h4v14h-4z"></path></svg>` : ''}
           ${v.listenIdle ? `<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"></path></svg>` : ''}
         </button>
+        ${v.playerOn ? `
+          <button class="btn icon ghost" aria-label="Next ayah" data-on-click="${on(v.pl?.next)}" style="width: 38px; height: 38px">
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 5h2v14h-2zM4 5v14l11-7z"></path></svg>
+          </button>
+          <span title="${attr(v.pl?.title)}" style="padding: 0 6px; font-size: 12px; font-weight: 600; color: var(--accent); white-space: nowrap; font-variant-numeric: tabular-nums">${esc(v.pl?.short)}</span>
+          <button class="btn" data-on-click="${on(v.pl?.cycleSpeed)}" aria-label="Playback speed" style="height: 30px; padding: 0 8px; font-size: 12px">${esc(v.pl?.speed)}</button>
+          <button class="btn icon ghost" aria-label="Repeat ayah" aria-pressed="${attr(v.pl?.repeat)}" data-on-click="${on(v.pl?.toggleRepeat)}" style="width: 34px; height: 34px; ${attr(v.pl?.repeatStyle)}">
+            <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"></path><path d="M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4"></path><path d="M21 13v2a3 3 0 0 1-3 3H3"></path></svg>
+          </button>
+          <button class="btn icon ghost" aria-label="Stop recitation" data-on-click="${on(v.pl?.close)}" style="width: 34px; height: 34px">
+            <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+          </button>
+          <span aria-hidden="true" style="${attr(v.divStyle)}"></span>
+        ` : ''}
+        ${v.dockExtras ? `
         <button class="btn icon ghost" aria-label="Practice recitation" aria-pressed="${attr(v.sidePractice)}" data-on-click="${on(v.openPractice)}" style="width: 42px; height: 42px; ${attr(v.practiceBtnStyle)}">
           <svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11a7 7 0 0 0 14 0M12 18v3"></path></svg>
         </button>
@@ -510,6 +502,7 @@ export function readerView(v, on) {
         <span aria-hidden="true" style="${attr(v.divStyle)}"></span>
         <button class="btn" data-on-click="${on(v.openGoto)}" aria-label="${attr(v.gotoAria)}" style="height: 36px; padding: 0 12px; border: 0; background: var(--chip); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums">${esc(v.pageShort)}</button>
         <span aria-hidden="true" style="${attr(v.divStyle)}"></span>
+        ` : ''}
         <button class="btn icon ghost" aria-label="Previous page" data-on-click="${on(v.prev)}"${bool('disabled', v.atStart)} style="width: 42px; height: 42px">
           <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
         </button>
@@ -588,6 +581,15 @@ export function readerView(v, on) {
             <button class="btn" data-on-click="${on(v.setNight)}" aria-pressed="${attr(v.isNight)}" style="height: 44px; border-radius: 10px; ${attr(v.seg?.night)}">Night</button>
           </div>
         </div>
+        ${v.notSingle ? `
+          <div style="display: flex; flex-direction: column; gap: 8px">
+            <span style="font-size: 12px; font-weight: 600; color: var(--muted)">Page size</span>
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+              <button class="btn" data-on-click="${on(v.setFitWidth)}" aria-pressed="${attr(v.fitWidth)}" style="height: 44px; border-radius: 10px; ${attr(v.seg?.fitWidth)}">Fill width</button>
+              <button class="btn" data-on-click="${on(v.setFitScreen)}" aria-pressed="${attr(v.fitScreen)}" style="height: 44px; border-radius: 10px; ${attr(v.seg?.fitScreen)}">Fit screen</button>
+            </div>
+          </div>
+        ` : ''}
         <div style="display: flex; flex-direction: column; gap: 8px">
           <span style="font-size: 12px; font-weight: 600; color: var(--muted)">Text size</span>
           <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
@@ -603,6 +605,12 @@ export function readerView(v, on) {
             <button class="btn" data-on-click="${on(v.setEn)}" aria-pressed="${attr(v.isEn)}" style="height: 44px; border-radius: 10px; ${attr(v.seg?.en)}">English</button>
           </div>
           <span style="font-size: 12px; color: var(--muted)">${esc(v.transSource)}</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px">
+          <label for="reciter" style="font-size: 12px; font-weight: 600; color: var(--muted)">Reciter</label>
+          <select id="reciter" value="${attr(v.reciterId)}" data-on-change="${on(v.onReciter)}" style="height: 44px; padding: 0 12px; border: 1px solid var(--rule); border-radius: 10px; background: var(--paper); color: var(--ink); font: inherit; font-size: 14px; cursor: pointer">
+            ${(v.reciters ?? []).map((rc) => `<option value="${attr(rc?.id)}">${esc(rc?.name)}</option>`).join('')}
+          </select>
         </div>
       </div>
     </div>

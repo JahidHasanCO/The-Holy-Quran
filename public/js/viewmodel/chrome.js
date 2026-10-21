@@ -9,9 +9,15 @@ const OPTION_ON = 'border-color: var(--accent); border-width: 2px';
 export function buildChrome(env) {
   const { s, A, T, themeName, single, page, mode, lang, fsc, panel, side, user, book, isOpen, shown, Q, pl } = env;
   const sideW = side ? '412px' : '0px';
+  const pageFit = s.pageFit || 'width';
   const pwExpr = single
     ? 'calc(100vw - 26px)'
-    : `max(240px, min(calc((100vw - 72px - ${sideW}) / 2), calc((100vh - 180px) * .58)))`;
+    : pageFit === 'fit'
+      // Fit screen: the whole spread fits the window height (page height ≈ 1.714 × width − 23px, measured);
+      // width only takes over when the window is too narrow. 150px = header + top gap + room for the dock.
+      ? `max(240px, min(calc((100vw - 72px - ${sideW}) / 2), calc((100vh - 150px) / 1.72)))`
+      // Fill width: pages use all the horizontal space and the spread scrolls.
+      : `max(240px, calc((100vw - 72px - ${sideW}) / 2))`;
   const cssVars = Object.keys(T).map((k) => `--${k}:${T[k]}`).join(';') + ';--pw:' + pwExpr;
   const isGoto = panel === 'goto';
 
@@ -23,6 +29,7 @@ export function buildChrome(env) {
       surahTab: (s.tab || 'surah') === 'surah' ? SEG_ON : '', juzTab: s.tab === 'juz' ? SEG_ON : '',
       paper: themeName === 'paper' ? OPTION_ON : '', night: themeName === 'night' ? OPTION_ON : '',
       bn: lang === 'bn' ? OPTION_ON : '', en: lang === 'en' ? OPTION_ON : '',
+      fitWidth: pageFit === 'width' ? OPTION_ON : '', fitScreen: pageFit === 'fit' ? OPTION_ON : '',
     },
     setBook: () => A.set({ mode: 'book' }),
     setWbw: () => A.set({ mode: 'wbw' }),
@@ -32,6 +39,9 @@ export function buildChrome(env) {
     setEn: () => A.set({ lang: 'en' }),
     transSource: lang === 'bn' ? 'Bangla · Muhiuddin Khan' : 'English · Saheeh International',
     isPaper: themeName === 'paper', isNight: themeName === 'night',
+    fitWidth: pageFit === 'width', fitScreen: pageFit === 'fit',
+    setFitWidth: () => A.set({ pageFit: 'width' }),
+    setFitScreen: () => A.set({ pageFit: 'fit' }),
     setPaper: () => A.set({ theme: 'paper' }),
     setNight: () => A.set({ theme: 'night' }),
     fontPct: Math.round(fsc * 100) + '%',
@@ -78,6 +88,10 @@ export function buildChrome(env) {
     showSurahTab: () => A.set({ tab: 'surah' }), showJuzTab: () => A.set({ tab: 'juz' }),
     query: s.query || '', onQuery: (e) => A.set({ query: e.target.value }),
     reciters: RECITERS,
+    reciterId: (pl && pl.reciter) || s.reciter || 'alafasy',
+    onReciter: (e) => A.setReciter(e.target.value),
+    // Phones have no room for everything while audio plays: keep page arrows and audio controls.
+    dockExtras: !(single && pl),
     bars: Array.from({ length: 14 }, (_, i) => ({ d: (-(i * 0.13) % 0.9).toFixed(2) + 's' })),
     sideOpen: !!side && Q, sideWord: side === 'word', sidePractice: side === 'practice',
     sideTitle: side === 'practice' ? 'Practice recitation' : 'Word',
@@ -102,7 +116,7 @@ export function buildChrome(env) {
     listenPlaying: !!(pl && pl.playing), listenIdle: !(pl && pl.playing),
     listenLabel: pl && pl.playing ? 'Pause recitation' : 'Listen to recitation',
     practiceBtnStyle: side === 'practice' ? 'background: var(--accentSoft); color: var(--accent)' : '',
-    bookPad: single ? '14px 12px 150px' : '26px 24px 150px',
+    bookPad: single ? '14px 12px 150px' : '14px 24px 88px',
     spreadW: single ? 'var(--pw)' : 'calc(var(--pw) * 2)',
     boardStyle: 'position: absolute; ' + (single ? 'inset: -6px -7px -8px -7px; border-radius: 10px;' : 'inset: -12px -16px -14px -16px; border-radius: 14px;') + ' background: linear-gradient(90deg, color-mix(in srgb, var(--primary) 50%, black), color-mix(in srgb, var(--primary) 88%, black) 6%, color-mix(in srgb, var(--primary) 75%, black) 49.4%, color-mix(in srgb, var(--primary) 40%, black) 50%, color-mix(in srgb, var(--primary) 75%, black) 50.6%, color-mix(in srgb, var(--primary) 88%, black) 94%, color-mix(in srgb, var(--primary) 50%, black)); box-shadow: 0 40px 70px -30px rgba(0,0,0,.55), 0 10px 24px rgba(0,0,0,.18)',
     turnMs: (TURN_MS / 1000) + 's',

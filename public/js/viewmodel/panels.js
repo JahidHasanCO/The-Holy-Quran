@@ -118,7 +118,8 @@ export function buildPlayer(env) {
   const PSu = data.surahs[surahNo - 1];
   const rec = RECITERS.find((r) => r.id === pl.reciter) || RECITERS[0];
   return {
-    title: `${PSu.name.transliterated} · Ayah ${ayahNo} of ${PSu.ayahCount}`, reciter: rec.name, reciterId: rec.id,
+    title: `${PSu.name.transliterated} · Ayah ${ayahNo} of ${PSu.ayahCount} · ${rec.name}`, short: `${surahNo}:${ayahNo}`,
+    reciter: rec.name, reciterId: rec.id,
     pct: Math.round(pl.t * 100) + '%', playing: !!pl.playing, paused: !pl.playing,
     toggleLabel: pl.playing ? 'Pause' : 'Play',
     toggle: () => A.togglePlay(pl),
@@ -129,7 +130,6 @@ export function buildPlayer(env) {
     repeat: !!pl.repeat,
     repeatStyle: pl.repeat ? 'background: var(--accentSoft); border-color: var(--accent); color: var(--accent)' : '',
     toggleRepeat: () => A.setPlayer({ ...pl, repeat: !pl.repeat }),
-    onReciter: (e) => A.setPlayer({ ...pl, reciter: e.target.value }),
     close: () => A.closePlayer(),
   };
 }

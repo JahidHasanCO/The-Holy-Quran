@@ -1,5 +1,5 @@
 const KEY = 'qr:v1';
-export const PERSISTED = ['page', 'theme', 'lang', 'fontScale', 'bookmarks', 'user', 'mode', 'player'];
+export const PERSISTED = ['page', 'theme', 'lang', 'fontScale', 'bookmarks', 'user', 'mode', 'player', 'reciter', 'pageFit'];
 
 export function loadSaved() {
   try {

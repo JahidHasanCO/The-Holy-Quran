@@ -49,6 +49,7 @@ export class ReaderController {
     togglePlay: (player) => this.#togglePlay(player),
     stepAyah: (player, direction) => this.#stepAyah(player, direction),
     closePlayer: () => this.#closePlayer(),
+    setReciter: (reciter) => this.#setReciter(reciter),
   };
 
   constructor({ root, board, savedState }) {
@@ -222,7 +223,7 @@ export class ReaderController {
 
   #playAyah(key) {
     const pl = this.#player();
-    const next = { ayah: key, playing: true, t: 0, reciter: pl?.reciter || 'alafasy', speed: pl?.speed || 0, repeat: false };
+    const next = { ayah: key, playing: true, t: 0, reciter: pl?.reciter || this.#store.state.reciter || 'alafasy', speed: pl?.speed || 0, repeat: false };
     this.#store.set({ player: next });
     this.#startAudio(next);
     this.#followPage(key);
@@ -234,6 +235,12 @@ export class ReaderController {
     if (!prev || !this.#audioLoaded) return;
     if (next.speed !== prev.speed) this.#audio.setSpeed(SPEEDS[next.speed || 0]);
     if (next.reciter !== prev.reciter && next.playing) this.#startAudio(next);
+  }
+
+  #setReciter(reciter) {
+    this.#store.set({ reciter });
+    const pl = this.#player();
+    if (pl) this.#setPlayer({ ...pl, reciter });
   }
 
   #togglePlay(player) {
