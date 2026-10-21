@@ -27,3 +27,7 @@ button{font:inherit}
 @keyframes turnOut{0%{transform:rotateY(0deg);opacity:1}55%{transform:rotateY(80deg) skewY(-4deg);opacity:1}100%{transform:rotateY(150deg);opacity:0}}
 @keyframes turnIn{0%{transform:rotateY(150deg);opacity:0}45%{transform:rotateY(80deg) skewY(-4deg);opacity:1}100%{transform:rotateY(0deg);opacity:1}}
 @keyframes shade{0%{opacity:0}50%{opacity:1}100%{opacity:0}}
+/* White cover: outlined buttons and hovers use the primary green instead of the paper-beige palette. */
+.cover-theme .btn:not(.primary):not(.ghost){border-color:color-mix(in srgb, var(--primary) 35%, transparent);color:var(--accent)}
+.cover-theme .btn:hover:not(.primary){background:color-mix(in srgb, var(--primary) 9%, transparent)}
+.cover-theme .btn.ghost:hover{background:color-mix(in srgb, var(--primary) 9%, transparent)}

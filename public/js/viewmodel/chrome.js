@@ -104,28 +104,42 @@ export function buildChrome(env) {
     practiceBtnStyle: side === 'practice' ? 'background: var(--accentSoft); color: var(--accent)' : '',
     bookPad: single ? '14px 12px 150px' : '26px 24px 150px',
     spreadW: single ? 'var(--pw)' : 'calc(var(--pw) * 2)',
-    boardStyle: 'position: absolute; ' + (single ? 'inset: -6px -7px -8px -7px; border-radius: 10px;' : 'inset: -12px -16px -14px -16px; border-radius: 14px;') + ' background: linear-gradient(90deg, #0E2E24, #1B4D3E 6%, #174535 49.4%, #0A241C 50%, #174535 50.6%, #1B4D3E 94%, #0E2E24); box-shadow: 0 40px 70px -30px rgba(0,0,0,.55), 0 10px 24px rgba(0,0,0,.18)',
+    boardStyle: 'position: absolute; ' + (single ? 'inset: -6px -7px -8px -7px; border-radius: 10px;' : 'inset: -12px -16px -14px -16px; border-radius: 14px;') + ' background: linear-gradient(90deg, color-mix(in srgb, var(--primary) 50%, black), color-mix(in srgb, var(--primary) 88%, black) 6%, color-mix(in srgb, var(--primary) 75%, black) 49.4%, color-mix(in srgb, var(--primary) 40%, black) 50%, color-mix(in srgb, var(--primary) 75%, black) 50.6%, color-mix(in srgb, var(--primary) 88%, black) 94%, color-mix(in srgb, var(--primary) 50%, black)); box-shadow: 0 40px 70px -30px rgba(0,0,0,.55), 0 10px 24px rgba(0,0,0,.18)',
     turnMs: (TURN_MS / 1000) + 's',
     cv: buildCover(env),
+    headerStyle: headerStyle(env),
+    shellClass: showCoverWhite(env) ? 'cover-theme' : '',
+    shellBg: showCoverWhite(env) ? coverGlow(single) : 'var(--bg)',
+    coverBg: 'transparent',
     openPractice: () => A.openPractice(shown),
     startListen: () => A.startListen(shown),
   };
 }
 
 function buildCover({ s, A, single, page, book, ry, rx, spin }) {
-  const W = single ? 220 : 320;
-  const H = single ? 316 : 460;
-  const Tk = single ? 40 : 56;
+  // Whole pixels, scaled to the window height so the cover fits without scrolling (same proportions as the design).
+  const vh = s.vh || window.innerHeight;
+  const H = Math.round(single ? Math.min(316, Math.max(180, vh - 400)) : Math.min(460, Math.max(220, vh - 230)));
+  const W = Math.round(H * (single ? 220 / 316 : 320 / 460));
+  const Tk = Math.round(H * (single ? 40 / 316 : 56 / 460));
   const dragging = !!s.dragging;
   return {
+    // Wide screens: book on the left, title and buttons on the right. Phones: stacked and centred.
+    pageLayout: single
+      ? 'flex-direction: column; align-items: center; justify-content: center; gap: 22px'
+      : 'flex-direction: row; align-items: center; justify-content: center; gap: 72px',
+    stageW: single ? '100%' : 'min(560px, 48%)',
+    infoLayout: single ? 'align-items: center; text-align: center; margin-top: 28px' : 'align-items: flex-start; text-align: left',
+    alignItems: single ? 'center' : 'flex-start',
     dims: `--bw: ${W}px; --bh: ${H}px; --bt: ${Tk}px`,
-    stageH: single ? '380px' : 'min(560px, calc(100vh - 290px))',
+    stageH: `${H + (single ? 64 : 90)}px`,
     transform: book === 'opening'
       ? `rotateX(0deg) rotateY(${Math.round(ry / 360) * 360}deg) scale(1.08)`
       : `rotateX(${rx.toFixed(1)}deg) rotateY(${ry.toFixed(1)}deg)`,
     transition: (dragging || (spin && book === 'closed')) ? 'none' : 'transform .8s cubic-bezier(.3,.1,.2,1)',
     cursor: dragging ? 'grabbing' : 'grab',
     coverAngle: book === 'opening' ? '168deg' : '0deg',
+    firstPage: book === 'opening' ? 'visible' : 'hidden',
     down(e) {
       try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* not capturable */ }
       A.drag = { x: e.clientX, y: e.clientY, ry, rx };
@@ -148,4 +162,29 @@ function buildCover({ s, A, single, page, book, ry, rx, spin }) {
     resume: () => A.startOpen(page),
     resumeLabel: `Continue · page ${page}`,
   };
+}
+
+// The cover is plain white in the light theme; night keeps its dark background.
+// White page with blurred glows in the primary green (the same var(--primary) as the buttons): behind the book and in the corners.
+const coverGlow = (single) => [
+  // behind the title and buttons
+  `radial-gradient(ellipse 45% 50% at ${single ? '50% 82%' : '76% 50%'}, color-mix(in srgb, var(--primary) 30%, transparent), color-mix(in srgb, var(--primary) 10%, transparent) 55%, color-mix(in srgb, var(--primary) 0%, transparent) 80%)`,
+  'radial-gradient(ellipse 55% 75% at 26% 52%, color-mix(in srgb, var(--primary) 38%, transparent), color-mix(in srgb, var(--primary) 12%, transparent) 55%, color-mix(in srgb, var(--primary) 0%, transparent) 80%)',
+  'radial-gradient(ellipse 45% 60% at 100% 100%, color-mix(in srgb, var(--primary) 30%, transparent), color-mix(in srgb, var(--primary) 0%, transparent) 75%)',
+  'radial-gradient(ellipse 40% 50% at 85% 0%, color-mix(in srgb, var(--primary) 18%, transparent), color-mix(in srgb, var(--primary) 0%, transparent) 75%)',
+  'radial-gradient(ellipse 30% 40% at 0% 100%, color-mix(in srgb, var(--primary) 14%, transparent), color-mix(in srgb, var(--primary) 0%, transparent) 75%)',
+  'linear-gradient(135deg, color-mix(in srgb, var(--primary) 6%, transparent), color-mix(in srgb, var(--primary) 0%, transparent) 45%, color-mix(in srgb, var(--primary) 9%, transparent))',
+  '#FFFFFF',
+].join(', ');
+const showCoverWhite = ({ themeName, isOpen }) => !isOpen && themeName === 'paper';
+
+const GLASS = 'background: var(--barGlass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--line)';
+// On the white cover the bar is clear at the top, then turns into frosted white glass with a green hairline.
+const COVER_GLASS = 'background: rgba(255,255,255,.55); backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4); border-bottom: 1px solid color-mix(in srgb, var(--primary) 14%, transparent); box-shadow: 0 6px 24px color-mix(in srgb, var(--primary) 6%, transparent)';
+const COVER_CLEAR = 'background: transparent; border-bottom: 1px solid transparent';
+
+function headerStyle(env) {
+  if (env.isOpen) return GLASS;
+  if (!showCoverWhite(env)) return env.s.scrolled ? GLASS : COVER_CLEAR;
+  return (env.s.scrolled ? COVER_GLASS : COVER_CLEAR) + '; transition: background .2s, border-color .2s';
 }

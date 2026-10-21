@@ -2,15 +2,15 @@
 import { esc, attr, bool } from './escape.js';
 
 export function readerView(v, on) {
-  return `<div style="min-height: 100vh; box-sizing: border-box; background: var(--bg); color: var(--ink); font-family: 'Noto Sans', system-ui, sans-serif; ${attr(v.cssVars)}">
+  return `<div class="${attr(v.shellClass)}" style="min-height: 100vh; box-sizing: border-box; background: ${attr(v.shellBg)}; color: var(--ink); font-family: 'Noto Sans', system-ui, sans-serif; ${attr(v.cssVars)}">
 
   
-  <header style="position: sticky; top: 0; z-index: 10; background: var(--barGlass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--line)">
+  <header style="position: sticky; top: 0; z-index: 10; ${attr(v.headerStyle)}">
     <div style="max-width: 1600px; margin: 0 auto; height: 52px; padding: 0 ${attr(v.edgePx)}; display: flex; align-items: center; justify-content: space-between; gap: 8px">
       <div style="display: flex; align-items: center; gap: 2px; min-width: 0">
-        <button class="btn icon ghost" aria-label="Surah and juz list" data-on-click="${on(v.openContents)}">
+        ${v.isOpen ? `<button class="btn icon ghost" aria-label="Surah and juz list" data-on-click="${on(v.openContents)}">
           <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"></path></svg>
-        </button>
+        </button>` : ''}
         ${v.isOpen ? `
           <button class="btn icon ghost" aria-label="Close the book" data-on-click="${on(v.closeBook)}">
             <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"></path><path d="M5 17a3 3 0 0 1 3-3h11"></path></svg>
@@ -51,12 +51,12 @@ export function readerView(v, on) {
 
   
   ${v.showCover ? `
-    <div style="min-height: calc(100vh - 52px); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; padding: 16px 16px 32px; background: radial-gradient(ellipse at 50% 42%, var(--stageGlow), var(--bg) 70%)">
-      <div role="img" aria-label="The Mushaf as a 3D book. Drag to turn it all the way around." data-on-pointerdown="${on(v.cv?.down)}" data-on-pointermove="${on(v.cv?.move)}" data-on-pointerup="${on(v.cv?.up)}" data-on-pointercancel="${on(v.cv?.up)}" style="perspective: 1600px; width: 100%; height: ${attr(v.cv?.stageH)}; display: flex; align-items: center; justify-content: center; cursor: ${attr(v.cv?.cursor)}; touch-action: none; user-select: none">
+    <div style="height: calc(100vh - 53px); overflow: hidden; box-sizing: border-box; display: flex; ${attr(v.cv?.pageLayout)}; padding: 4px 12px 8px; background: ${attr(v.coverBg)}">
+      <div role="img" aria-label="The Mushaf as a 3D book. Drag to turn it all the way around." data-on-pointerdown="${on(v.cv?.down)}" data-on-pointermove="${on(v.cv?.move)}" data-on-pointerup="${on(v.cv?.up)}" data-on-pointercancel="${on(v.cv?.up)}" style="perspective: 1600px; width: ${attr(v.cv?.stageW)}; height: ${attr(v.cv?.stageH)}; display: flex; align-items: center; justify-content: center; cursor: ${attr(v.cv?.cursor)}; touch-action: none; user-select: none">
         <div style="position: relative; transform-style: preserve-3d; width: var(--bw); height: var(--bh); transform: ${attr(v.cv?.transform)}; transition: ${attr(v.cv?.transition)}; ${attr(v.cv?.dims)}">
 
           
-          <div style="position: absolute; inset: 0; transform: rotateY(180deg) translateZ(calc(var(--bt) / 2)); backface-visibility: hidden; border-radius: 6px 10px 10px 6px; background: linear-gradient(135deg, #1B4D3E, #0F3329 60%, #0B271F); box-shadow: inset 0 0 0 1px rgba(255,255,255,.06)">
+          <div style="position: absolute; inset: 0; transform: rotateY(180deg) translateZ(calc(var(--bt) / 2)); backface-visibility: hidden; border-radius: 6px 10px 10px 6px; background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 88%, black), color-mix(in srgb, var(--primary) 55%, black) 60%, color-mix(in srgb, var(--primary) 42%, black)); box-shadow: inset 0 0 0 1px rgba(255,255,255,.06)">
             <div style="position: absolute; inset: 7%; border: 1.5px solid #C9A961; border-radius: 4px; opacity: .8"></div>
             <svg aria-hidden="true" viewBox="0 0 100 100" style="position: absolute; left: 50%; top: 50%; width: 26%; transform: translate(-50%, -50%); color: #C9A961; opacity: .85" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="22" y="22" width="56" height="56"></rect><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)"></rect><circle cx="50" cy="50" r="9"></circle></svg>
           </div>
@@ -67,7 +67,7 @@ export function readerView(v, on) {
           <div style="position: absolute; left: 1%; width: 97%; height: calc(var(--bt) - 6px); top: calc(50% - (var(--bt) - 6px) / 2); transform: rotateX(-90deg) translateZ(calc(var(--bh) / 2 - 4px)); background: repeating-linear-gradient(0deg, #F5EEDC 0 2px, #E3D7BA 2px 3px)"></div>
 
           
-          <div style="position: absolute; top: 0; height: 100%; width: var(--bt); left: calc(50% - var(--bt) / 2); transform: rotateY(90deg) translateZ(calc(var(--bw) / 2)); background: linear-gradient(90deg, #0B271F, #1B4D3E 30%, #1F5A48 50%, #1B4D3E 70%, #0B271F); display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 14% 0; box-sizing: border-box">
+          <div style="position: absolute; top: 0; height: 100%; width: var(--bt); left: calc(50% - var(--bt) / 2); transform: rotateY(90deg) translateZ(calc(var(--bw) / 2)); background: linear-gradient(90deg, color-mix(in srgb, var(--primary) 42%, black), color-mix(in srgb, var(--primary) 88%, black) 30%, var(--primary) 50%, color-mix(in srgb, var(--primary) 88%, black) 70%, color-mix(in srgb, var(--primary) 42%, black)); display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 14% 0; box-sizing: border-box">
             <span style="width: 70%; height: 3px; background: #C9A961; box-shadow: 0 6px 0 #C9A961"></span>
             <span lang="ar" style="writing-mode: vertical-rl; font-family: 'Amiri', serif; font-weight: 700; font-size: calc(var(--bt) * .42); color: #E2C77E; letter-spacing: .04em">القرآن الكريم</span>
             <span style="width: 70%; height: 3px; background: #C9A961; box-shadow: 0 -6px 0 #C9A961"></span>
@@ -75,7 +75,7 @@ export function readerView(v, on) {
 
           
           <div style="position: absolute; inset: 0; transform-style: preserve-3d; transform-origin: right center; transform: translateZ(calc(var(--bt) / 2)) rotateY(${attr(v.cv?.coverAngle)}); transition: transform 1.1s cubic-bezier(.4,.1,.2,1) .35s">
-            <div style="position: absolute; inset: 0; backface-visibility: hidden; border-radius: 6px 10px 10px 6px; background: radial-gradient(ellipse at 40% 30%, #2A6A55, #174535 55%, #0E2E24); box-shadow: inset 0 0 0 1px rgba(255,255,255,.08), inset -10px 0 18px rgba(0,0,0,.35)">
+            <div style="position: absolute; inset: 0; backface-visibility: hidden; border-radius: 6px 10px 10px 6px; background: radial-gradient(ellipse at 40% 30%, color-mix(in srgb, var(--primary) 85%, white), color-mix(in srgb, var(--primary) 75%, black) 55%, color-mix(in srgb, var(--primary) 50%, black)); box-shadow: inset 0 0 0 1px rgba(255,255,255,.08), inset -10px 0 18px rgba(0,0,0,.35)">
               <div style="position: absolute; inset: 6%; border: 2px solid #C9A961; border-radius: 5px"></div>
               <div style="position: absolute; inset: 8.5%; border: 1px solid rgba(201,169,97,.6); border-radius: 3px"></div>
               <svg aria-hidden="true" viewBox="0 0 40 40" style="position: absolute; left: 8%; top: 8%; width: 11%; color: #C9A961" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 2h14M2 2v14M6 6l10 10M2 2c10 2 14 6 14 14"></path></svg>
@@ -91,22 +91,22 @@ export function readerView(v, on) {
                 <span lang="ar" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, 30%); font-family: 'Amiri', serif; font-weight: 700; font-size: calc(var(--bw) * .065); color: #E8CD84; white-space: nowrap">الكريم</span>
               </div>
             </div>
-            <div style="position: absolute; inset: 0; transform: rotateY(180deg); backface-visibility: hidden; border-radius: 10px 6px 6px 10px; background: repeating-linear-gradient(45deg, #EADFC4 0 6px, #E2D4B4 6px 12px); box-shadow: inset 0 0 0 10px #174535"></div>
+            <div style="position: absolute; inset: 0; transform: rotateY(180deg); backface-visibility: hidden; border-radius: 10px 6px 6px 10px; background: repeating-linear-gradient(45deg, #EADFC4 0 6px, #E2D4B4 6px 12px); box-shadow: inset 0 0 0 10px color-mix(in srgb, var(--primary) 75%, black)"></div>
           </div>
 
           
-          <div style="position: absolute; inset: 1.5% 2% 1.5% 1%; transform: translateZ(calc(var(--bt) / 2 - 2px)); background: #FBF6EA; border-radius: 2px; display: flex; align-items: center; justify-content: center">
-            <span lang="ar" style="font-family: 'Amiri', serif; font-size: calc(var(--bw) * .08); color: #0F5B4A">بِسۡمِ ٱللَّهِ</span>
+          <div style="position: absolute; inset: 1.5% 2% 1.5% 1%; visibility: ${attr(v.cv?.firstPage)}; transform: translateZ(calc(var(--bt) / 2 - 2px)); background: #FBF6EA; border-radius: 2px; display: flex; align-items: center; justify-content: center">
+            <span lang="ar" style="font-family: 'Amiri', serif; font-size: calc(var(--bw) * .08); color: var(--primary)">بِسۡمِ ٱللَّهِ</span>
           </div>
         </div>
       </div>
 
-      <div style="display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center">
+      <div style="display: flex; flex-direction: column; ${attr(v.cv?.infoLayout)}; gap: 14px">
         <div style="display: flex; flex-direction: column; gap: 2px">
           <span style="font-size: 22px; font-weight: 700">The Holy Quran</span>
           <span style="font-size: 14px; color: var(--muted)">114 surahs · 604 pages · Madinah Mushaf</span>
         </div>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: ${attr(v.cv?.alignItems)}">
           <button class="btn primary" data-on-click="${on(v.cv?.open)}" style="height: 48px; padding: 0 26px; font-size: 15px; font-weight: 600">
             <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6c-2-1.5-5-2-8-2v14c3 0 6 .5 8 2 2-1.5 5-2 8-2V4c-3 0-6 .5-8 2z"></path><path d="M12 6v14"></path></svg>
             Open the Mushaf
@@ -117,7 +117,6 @@ export function readerView(v, on) {
           <button class="btn icon ghost" aria-label="Turn the book left" data-on-click="${on(v.cv?.left)}">
             <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path></svg>
           </button>
-          <span style="font-size: 13px">Drag to turn the book 360°</span>
           <button class="btn icon ghost" aria-label="Turn the book right" data-on-click="${on(v.cv?.right)}">
             <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"></path><path d="M21 3v5h-5"></path></svg>
           </button>

@@ -72,6 +72,11 @@ export class ReaderController {
       this.#persist(state);
       this.#render();
     });
+    window.addEventListener('resize', () => this.#store.set({ vh: window.innerHeight }));
+    window.addEventListener('scroll', () => {
+      const scrolled = window.scrollY > 0;
+      if (scrolled !== !!this.#store.state.scrolled) this.#store.set({ scrolled });
+    }, { passive: true });
     this.#spinCover();
     this.#render();
   }
