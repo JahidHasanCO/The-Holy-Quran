@@ -1,6 +1,9 @@
 import { ReaderController } from './controller/ReaderController.js';
 import { BOARDS, DEFAULT_BOARD } from './state/boards.js';
 import { loadSaved } from './services/storage.js';
+import { initFirebase } from './services/firebase.js';
+
+initFirebase();
 
 const params = new URLSearchParams(location.search);
 const view = params.get('view');

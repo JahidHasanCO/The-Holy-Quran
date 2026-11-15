@@ -3,6 +3,6 @@ import { buildUseCases } from './container.js';
 import { createApp } from '../infrastructure/http/createApp.js';
 
 const useCases = await buildUseCases(config);
-const app = createApp({ useCases, publicDir: config.publicDir });
+const app = createApp({ useCases, publicDir: config.publicDir, firebaseConfig: config.firebase });
 
 app.listen(config.port, () => console.log(`Quran Reader on http://localhost:${config.port}`));
