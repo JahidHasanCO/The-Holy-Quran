@@ -660,7 +660,7 @@ export function readerView(v, on) {
           <li style="display: flex; gap: 10px; align-items: center"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent); flex: none"><path d="M5 12l4 4 10-10"></path></svg>Practice history for each surah</li>
           <li style="display: flex; gap: 10px; align-items: center"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent); flex: none"><path d="M5 12l4 4 10-10"></path></svg>Reciter, theme and text size</li>
         </ul>
-        <button class="btn" data-on-click="${on(v.mockGoogle)}" style="height: 48px; border-radius: 10px; border: 1px solid #747775; background: #FFFFFF; color: #1F1F1F; font-size: 15px; font-weight: 600">
+        <button class="btn" data-on-click="${on(v.signInGoogle)}" style="height: 48px; border-radius: 10px; border: 1px solid #747775; background: #FFFFFF; color: #1F1F1F; font-size: 15px; font-weight: 600">
           <span aria-hidden="true" style="width: 22px; height: 22px; border-radius: 4px; border: 1px dashed #9AA0A6; font-size: 10px; display: inline-flex; align-items: center; justify-content: center; color: #5F6368">G</span>
           Continue with Google
         </button>

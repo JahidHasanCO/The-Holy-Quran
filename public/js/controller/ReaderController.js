@@ -9,6 +9,7 @@ import { readerView } from '../ui/readerView.js';
 import { Renderer } from '../ui/Renderer.js';
 import { LAST_PAGE, nextKey, previousKey } from '../lib/quranNav.js';
 import { clamp } from '../lib/format.js';
+import { watchAuth } from '../services/firebase.js';
 
 const OPEN_MS = 1700;
 const PRACTICE_MS = 3200;
@@ -68,6 +69,7 @@ export class ReaderController {
   }
 
   start() {
+    if (!this.#board.preview) watchAuth((user) => this.#store.set({ user }));
     this.#mq.addEventListener('change', () => this.#store.set({ narrow: this.#mq.matches }));
     this.#store.subscribe((state) => {
       this.#persist(state);

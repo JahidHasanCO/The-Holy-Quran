@@ -1,6 +1,7 @@
 import { TURN_MS } from '../state/constants.js';
 import { RECITERS } from '../services/audio.js';
 import { LAST_PAGE } from '../lib/quranNav.js';
+import { signInWithGoogle, signOutUser } from '../services/firebase.js';
 
 const SEG_ON = 'background: var(--paper); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.14)';
 const OPTION_ON = 'border-color: var(--accent); border-width: 2px';
@@ -75,11 +76,18 @@ export function buildChrome(env) {
     panelSignin: panel === 'signin', panelAccount: panel === 'account' && !!user,
     signedIn: !!user, signedOut: !user,
     userInitial: user ? user.name.charAt(0).toUpperCase() : '', userName: user ? user.name : '', userEmail: user ? user.email : '',
-    mockGoogle() {
-      A.set({ user: { name: 'Your Name', email: 'you@gmail.com' }, panel: '' });
-      A.say('Signed in with Google · progress will sync');
+    async signInGoogle() {
+      try {
+        const u = await signInWithGoogle();
+        A.set({ user: u, panel: '' });
+        A.say('Signed in with Google · progress will sync');
+      } catch (err) {
+        if (err?.code === 'auth/popup-closed-by-user' || err?.code === 'auth/cancelled-popup-request') return;
+        A.say(err?.code === 'auth/popup-blocked' ? 'Allow pop-ups to sign in' : 'Sign-in failed. Please try again.');
+      }
     },
-    signOut() {
+    async signOut() {
+      try { await signOutUser(); } catch { /* the local sign-out below still applies */ }
       A.set({ user: null, panel: '' });
       A.say('Signed out');
     },
